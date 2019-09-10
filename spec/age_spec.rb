@@ -2,145 +2,145 @@ require 'rspec'
 require_relative '../models/age'
 
 describe 'age of empires tests' do
-  #Los guerreros tienen estos parámetros por default: potencial_ofensivo=20, energia=100, potencial_defensivo=10
+  #Los guerreros tienen estos parámetros por default: offensive_potential=20, energy=100, defensive_potential=10
   it 'vikingo ataca a atila' do
-    atila= Guerrero.new
-    vikingo = Guerrero.new 70
+    atila= Warrior.new
+    vikingo = Warrior.new 70
 
-    vikingo.atacar atila
-    expect(atila.energia).to eq(40)
+    vikingo.attack atila
+    expect(atila.energy).to eq(40)
   end
 
   it 'espadachin ataca a atila' do
-    atila= Guerrero.new
-    don_quijote = Espadachin.new(Espada.new(50))
+    atila= Warrior.new
+    don_quijote = Swordsman.new(Sword.new(50))
 
-    don_quijote.atacar atila
-    expect(atila.energia).to eq(40)
+    don_quijote.attack atila
+    expect(atila.energy).to eq(40)
   end
 
   it 'atila ataca a vikingo pero no le hace danio' do
-    atila= Guerrero.new
-    vikingo = Guerrero.new 70
+    atila= Warrior.new
+    vikingo = Warrior.new 70
 
-    atila.atacar vikingo
-    expect(atila.energia).to eq(100)
+    atila.attack vikingo
+    expect(atila.energy).to eq(100)
   end
 
-  it 'Muralla solo defiende' do
-    muralla = Muralla.new
-    vikingo = Guerrero.new 70
+  it 'Wall solo defiende' do
+    wall = Wall.new
+    vikingo = Warrior.new 70
 
-    vikingo.atacar(muralla)
-    expect(muralla.energia).to eq(180)
-    vikingo.atacar(muralla)
-    expect(muralla.energia).to eq(160)
+    vikingo.attack(wall)
+    expect(wall.energy).to eq(180)
+    vikingo.attack(wall)
+    expect(wall.energy).to eq(160)
   end
 
-  it 'Muralla no ataca' do
-    muralla = Muralla.new
-    don_quijote = Espadachin.new(Espada.new(40))
+  it 'Wall no ataca' do
+    wall = Wall.new
+    don_quijote = Swordsman.new(Sword.new(40))
     #Esto es la manera sintáctica de decir que lo que se espera dentro de los {} del expect, lanza una exception.
     #Despues veremos que quieren decir los {}
-    expect { muralla.atacar don_quijote }.to raise_error(NoMethodError)
+    expect { wall.attack don_quijote }.to raise_error(NoMethodError)
   end
 
   it 'Misil no defiende' do
     misil = Misil.new
-    don_quijote = Espadachin.new(Espada.new(40))
-    expect { don_quijote.atacar misil }.to raise_error(NoMethodError)
+    don_quijote = Swordsman.new(Sword.new(40))
+    expect { don_quijote.attack misil }.to raise_error(NoMethodError)
   end
 
   ######################
 
-  it 'Atacante descansado pega doble' do
-    atila = Guerrero.new #(potencial_ofensivo = 20, energia = 100, potencial_defensivo = 10)
-    conan = Guerrero.new
+  it 'Attacker descansado pega doble' do
+    atila = Warrior.new #(offensive_potential = 20, energy = 100, defensive_potential = 10)
+    conan = Warrior.new
 
-    atila.descansar
-    atila.atacar conan
+    atila.rest
+    atila.attack conan
 
     # 100 - (20 * 2 - 10)
-    expect(conan.energia).to eq(70)
+    expect(conan.energy).to eq(70)
   end
 
-  it 'Atacante descansado ataca doble solo una vez por descanso' do
-    atila = Guerrero.new
-    conan = Guerrero.new
-    heman = Guerrero.new
+  it 'Attacker descansado ataca doble solo una vez por descanso' do
+    atila = Warrior.new
+    conan = Warrior.new
+    heman = Warrior.new
 
-    atila.descansar
-    atila.atacar conan
-    atila.atacar heman
+    atila.rest
+    atila.attack conan
+    atila.attack heman
 
     # 100 - (20 - 10)
-    expect(heman.energia).to eq(90)
+    expect(heman.energy).to eq(90)
   end
 
-  it 'Defensor descansado suma 10' do
-    muralla = Muralla.new
-    expect(muralla.energia).to eq(200)
+  it 'Defender descansado suma 10' do
+    wall = Wall.new
+    expect(wall.energy).to eq(200)
 
-    muralla.descansar
+    wall.rest
 
-    expect(muralla.energia).to eq(210)
+    expect(wall.energy).to eq(210)
   end
 
-  it 'Guerrero descansa como Defensor y como Atacante' do
-    atila = Guerrero.new #(potencial_ofensivo = 20, energia = 100, potencial_defensivo = 10)
-    conan = Guerrero.new
-    expect(atila.energia).to eq(100)
+  it 'Warrior descansa como Defender y como Attacker' do
+    atila = Warrior.new #(offensive_potential = 20, energy = 100, defensive_potential = 10)
+    conan = Warrior.new
+    expect(atila.energy).to eq(100)
 
-    atila.descansar
-    atila.atacar conan
+    atila.rest
+    atila.attack conan
 
-    expect(conan.energia).to eq(70)
-    expect(atila.energia).to eq(110)
+    expect(conan.energy).to eq(70)
+    expect(atila.energy).to eq(110)
   end
 
-  it 'kamikaze pierde su energia luego de atacar' do
-    kamikaze = Kamikaze.new #(potencial_ofensivo = 250, energia = 100, potencial_defensivo = 10)
-    muralla = Muralla.new #(potencial_defensivo = 50, energia = 200)
+  it 'kamikaze pierde su energy luego de attack' do
+    kamikaze = Kamikaze.new #(offensive_potential = 250, energy = 100, defensive_potential = 10)
+    wall = Wall.new #(defensive_potential = 50, energy = 200)
 
-    kamikaze.atacar(muralla)
+    kamikaze.attack(wall)
 
-    expect(muralla.energia).to eq(0)
-    expect(kamikaze.energia).to eq(0)
+    expect(wall.energy).to eq(0)
+    expect(kamikaze.energy).to eq(0)
   end
 
-  it 'kamikaze descansa solo como atacante' do
+  it 'kamikaze descansa solo como attacker' do
     kamikaze = Kamikaze.new
 
-    expect(kamikaze.potencial_ofensivo).to eq(250)
+    expect(kamikaze.offensive_potential).to eq(250)
 
-    kamikaze.descansar
+    kamikaze.rest
 
-    expect(kamikaze.energia).to eq(100)
-    expect(kamikaze.potencial_ofensivo).to eq(500)
+    expect(kamikaze.energy).to eq(100)
+    expect(kamikaze.offensive_potential).to eq(500)
   end
 
   ######################
 
-  it('Peloton descansador hace descansar a sus guerreros que no estan descansados') do
-    atila = Guerrero.new
-    vikingo = Guerrero.new 70
-    don_quijote = Espadachin.new(Espada.new(50))
-    Peloton.descansador([atila, vikingo])
+  it('Squad descansador hace rest a sus guerreros que no estan descansados') do
+    atila = Warrior.new
+    vikingo = Warrior.new 70
+    don_quijote = Swordsman.new(Sword.new(50))
+    Squad.descansador([atila, vikingo])
 
-    don_quijote.atacar(vikingo)
+    don_quijote.attack(vikingo)
     #Al ser atacado, el vikingo le avisa al ejercito. El vikingo no esta descansado luego de recibir el ataque
-    expect(atila.energia).to eq(100) #Atila no descansa, porque esta descansado
-    expect(vikingo.energia).to eq(50) #En un test anterior energia quedaba en 40, pero ahora como descanso queda en 50
-    expect(vikingo.potencial_ofensivo).to eq(140) #Ademas, su potencial_ofensivo se duplica (para el proximo ataque)
+    expect(atila.energy).to eq(100) #Atila no descansa, porque esta descansado
+    expect(vikingo.energy).to eq(50) #En un test anterior energy quedaba en 40, pero ahora como descanso queda en 50
+    expect(vikingo.offensive_potential).to eq(140) #Ademas, su offensive_potential se duplica (para el proximo ataque)
   end
 
-  it 'Peloton cobarde se retira cuando sufre danio uno de sus guerreros' do
-    atila = Guerrero.new
-    vikingo = Guerrero.new 70
-    peloton = Peloton.cobarde([atila])
+  it 'Squad cobarde se retira cuando sufre danio uno de sus guerreros' do
+    atila = Warrior.new
+    vikingo = Warrior.new 70
+    squad = Squad.cobarde([atila])
 
-    vikingo.atacar(atila)
+    vikingo.attack(atila)
 
-    expect(peloton.retirado).to be(true)
+    expect(squad.retirado).to be(true)
   end
 end
